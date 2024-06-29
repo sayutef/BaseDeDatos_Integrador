@@ -67,3 +67,11 @@ CREATE TABLE Client (
     updated_by VARCHAR(255) NOT NULL,
     deleted BOOLEAN NOT NULL
 );
+
+CREATE TABLE PurchaseOrder_Product (
+    purchase_order_product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    purchase_order_id INT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Product(product_id),
+    FOREIGN KEY (purchase_order_id) REFERENCES PurchaseOrder(purchaseOrder_id)
+);
