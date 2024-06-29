@@ -11,6 +11,9 @@ node_modules/
 # misc
 .env
 
+#main
+main
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
