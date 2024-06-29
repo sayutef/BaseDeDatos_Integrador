@@ -1,3 +1,19 @@
+DB_HOST=localhost
+
+DB_PORT=3306
+
+DB_USER=root
+    
+DB_PASSWORD=1234
+
+DB_NAME=inicio_db
+
+PORT=3000
+
+SECRET = whatevertoken
+
+
+
 create database inicio_db, 
 
 CREATE TABLE User (
@@ -75,3 +91,4 @@ CREATE TABLE PurchaseOrder_Product (
     FOREIGN KEY (product_id) REFERENCES Product(product_id),
     FOREIGN KEY (purchase_order_id) REFERENCES PurchaseOrder(purchaseOrder_id)
 );
+
