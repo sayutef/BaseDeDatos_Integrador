@@ -111,4 +111,22 @@ export class ClientRepository {
             });
         });
     }
+    public static async deleteClientLogic(role_id: number): Promise<boolean> {
+        const query = 'UPDATE client SET deleted = 1 WHERE role_id = ?';
+        return new Promise((resolve, reject) => {
+            connection.query(query, [role_id], (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if ((result as ResultSetHeader).affectedRows > 0) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            });
+        });
+    }
 }
+
+

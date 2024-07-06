@@ -78,4 +78,11 @@ export class purchaseOrderService {
             throw new Error(`Error al eliminar usuario: ${error.message}`);
         }
     }
+    public static async deletePurchaseOrderLogic(userId: number): Promise<boolean> {
+        try {
+            return await PurchaseOrderRepository.deletePurchaseLogic(userId);
+        } catch (error: any) {
+            throw new Error(`Error deleting user: ${error.message}`);
+        }
+    }
 }

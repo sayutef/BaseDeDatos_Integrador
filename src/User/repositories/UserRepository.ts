@@ -55,9 +55,9 @@ export class UserRepository {
       }
 
     public static async createUser(user: User): Promise<User> {
-        const { name, password, role_id_fk, created_by, updated_at, updated_by, deleted } = user;
-        const query = `INSERT INTO user (name, password, role_id_fk, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const values = [name, password, role_id_fk, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const { name, password, role_id_fk,created_at, created_by, updated_at, updated_by, deleted } = user;
+        const query = `INSERT INTO user (name, password, role_id_fk, created_at,created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
+        const values = [name, password, role_id_fk,created_at, created_by, updated_at, updated_by, deleted ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {

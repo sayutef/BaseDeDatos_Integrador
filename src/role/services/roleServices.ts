@@ -67,4 +67,11 @@ export class RoleService {
             throw new Error(`Error al eliminar rol: ${error.message}`);
         }
     }
+    public static async deleteRoleLogic(userId: number): Promise<boolean> {
+        try {
+            return await RoleRepository.deleteRolLogic(userId);
+        } catch (error: any) {
+            throw new Error(`Error deleting user: ${error.message}`);
+        }
+    }
 }

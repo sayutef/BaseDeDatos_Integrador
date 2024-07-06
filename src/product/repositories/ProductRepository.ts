@@ -38,9 +38,9 @@ export class ProductRepository{
     }
     
     public static async createUser(product : Product): Promise<Product> {
-        const query = 'INSERT INTO product (name, description, price, category,stock, type_measurement,created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?,?)';
+        const query = 'INSERT INTO product (name, description, price, category,stock, type_measurement,created_at,created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)';
         return new Promise((resolve, reject) => {
-            connection.query(query, [product.name, product.description , product.price,product.category,product.stock,product.type_measurement, product.created_by, product.updated_at, product.updated_by, product.deleted], (error, result) => {
+            connection.query(query, [product.name, product.description , product.price,product.category,product.stock,product.type_measurement,product.created_at, product.created_by, product.updated_at, product.updated_by, product.deleted], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -52,11 +52,7 @@ export class ProductRepository{
         });
     }
     public static async updateProduct(product_id: number, productData: Product): Promise<Product | null> {
-        const query = `
-            UPDATE product
-            SET name = ?, description = ?, price = ?, category = ?, stock = ?, type_measurement = ?, updated_at = ?, updated_by = ?, deleted = ?
-            WHERE product_id = ?
-        `;
+        const query = `UPDATE product SET name = ?, description = ?, price = ?, category = ?, stock = ?, type_measurement = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE product_id = ? `;
         const values = [
             productData.name,
             productData.description,
@@ -103,4 +99,22 @@ export class ProductRepository{
         });
     }
 
+    public static async deleteProductLogic(role_id: number): Promise<boolean> {
+        const query = 'UPDATE product SET deleted = 1 WHERE role_id = ?';
+        return new Promise((resolve, reject) => {
+            connection.query(query, [role_id], (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if ((result as ResultSetHeader).affectedRows > 0) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            });
+        });
+    }
 }
+
+

@@ -8,6 +8,7 @@
   import clientRoutes from './client/routes/clientRoutes';
   import purchaseOrderRoutes from './purchase_order/routes/purchaseOrderRoutes';
   import deliveryRoutes from './delivery/routes/deliveryRoutes';
+import roleRoutes from './role/routes/roleRoutes';
 
   dotenv.config();
 
@@ -16,7 +17,8 @@
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-
+  
+  app.use('/api/rol', roleRoutes); 
   app.use('/api/users', userRoutes); 
   app.use('/api/products', productRoutes); 
   app.use('/api/clients', clientRoutes);

@@ -74,4 +74,11 @@ export class deliveryService {
             throw new Error(`Error al eliminar delivery: ${error.message}`);
         }
     }
+    public static async deleteDeliveryLogic(userId: number): Promise<boolean> {
+        try {
+            return await DeliveryRepository.deleteDeliveryLogic(userId);
+        } catch (error: any) {
+            throw new Error(`Error deleting user: ${error.message}`);
+        }
+    }
 }

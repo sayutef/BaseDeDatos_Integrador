@@ -77,4 +77,11 @@ export class productService{
             throw new Error(`Error al eliminar producto: ${error.message}`);
         }
     }
+    public static async deleteProductLogic(userId: number): Promise<boolean> {
+        try {
+            return await ProductRepository.deleteProductLogic(userId);
+        } catch (error: any) {
+            throw new Error(`Error deleting user: ${error.message}`);
+        }
+    }
 }

@@ -60,3 +60,16 @@ export const deletePurchaseOrder = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const deleteLogicalPurchaseOrder = async (req: Request, res: Response) => {
+    try {
+        const userId = parseInt(req.params.user_id, 10);
+        const success = await purchaseOrderService.deletePurchaseOrderLogic(userId);
+        if (success) {
+            res.status(200).json({ message: 'User logically deleted successfully.' });
+        } else {
+            res.status(404).json({ message: 'User not found or already logically deleted.' });
+        }
+    } catch (error : any) {
+        res.status(500).json({ error: error.message });
+    }
+};

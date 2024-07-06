@@ -58,3 +58,16 @@ export const deleteDelivery = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const deleteLogicalDelivery = async (req: Request, res: Response) => {
+    try {
+        const userId = parseInt(req.params.user_id, 10);
+        const success = await deliveryService.deleteDeliveryLogic(userId);
+        if (success) {
+            res.status(200).json({ message: 'User logically deleted successfully.' });
+        } else {
+            res.status(404).json({ message: 'User not found or already logically deleted.' });
+        }
+    } catch (error : any) {
+        res.status(500).json({ error: error.message });
+    }
+};

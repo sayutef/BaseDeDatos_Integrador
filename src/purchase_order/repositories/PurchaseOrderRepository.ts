@@ -85,4 +85,22 @@ export class PurchaseOrderRepository {
             });
         });
     }
+    public static async deletePurchaseLogic(role_id: number): Promise<boolean> {
+        const query = 'UPDATE purchaseorder SET deleted = 1 WHERE role_id = ?';
+        return new Promise((resolve, reject) => {
+            connection.query(query, [role_id], (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if ((result as ResultSetHeader).affectedRows > 0) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+            });
+        });
+    }
 }
+
+

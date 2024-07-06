@@ -85,4 +85,12 @@ export class ClientService {
             throw new Error(`Error al eliminar cliente: ${error.message}`);
         }
     }
+
+    public static async deleteClientLogic(userId: number): Promise<boolean> {
+        try {
+            return await ClientRepository.deleteClientLogic(userId);
+        } catch (error: any) {
+            throw new Error(`Error deleting user: ${error.message}`);
+        }
+    }
 }
