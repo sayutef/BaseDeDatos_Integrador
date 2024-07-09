@@ -37,8 +37,8 @@ app.use(errorHandler);
 
 
 const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/ferreteriaapi.integrador.xyz/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/ferreteriaapi.integrador.xyz/fullchain.pem')
+  key: fs.readFileSync('privkey.pem'),
+  cert: fs.readFileSync('fullchain.pem')
 };
 
 
