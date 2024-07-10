@@ -22,13 +22,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // CORS configuration
 const corsOptions = {
-  origin: ['https://ferreteriaapi.integrador.xyz', 'https://ferreteriapi.integrador.xyz'],
+  origin: ['https://ferreteriaapi.integrador.xyz', 'https://ferreteria.integrador.xyz'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
+
+app.get('/', (_req, res) => {
+  res.send('Hola, mundo!');
+  });
 
 app.use('/api/rol', roleRoutes);
 app.use('/api/users', userRoutes);
