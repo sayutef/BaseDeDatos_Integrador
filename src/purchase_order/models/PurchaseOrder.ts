@@ -3,8 +3,8 @@ export interface PurchaseOrder{
     date: string;
     total: string;
     client_id_fk : number;
-    shippingAddress: string;
-    orderStatus: string; 
+    address_id_fk:number;
+    status_id_fk:number;
     created_at: string;
     created_by: string;
     updated_at: string;

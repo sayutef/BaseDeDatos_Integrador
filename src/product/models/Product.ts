@@ -4,8 +4,7 @@ export interface Product{
     description: string ;
     price: number ;
     stock:number;
-    type_measurement:string;
-    category: string ;
+    category_id_fk: number;
     created_at: string;
     created_by: string ;
     updated_at: string ;

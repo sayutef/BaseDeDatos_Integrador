@@ -2,25 +2,25 @@ import { PurchaseOrderRepository } from "../repositories/PurchaseOrderRepository
 import { PurchaseOrder } from "../models/PurchaseOrder";
 import { DateUtils } from "../../shared/utils/DateUtils";
 
-export class purchaseOrderService {
+export class PurchaseOrderService {
 
     public static async getAllPurchaseOrder(): Promise<PurchaseOrder[]> {
         try {
             return await PurchaseOrderRepository.findAll();
         } catch (error: any) {
-            throw new Error(`Error al obtener el recibp ${error.message}`);
+            throw new Error(`Error al obtener las órdenes de compra: ${error.message}`);
         }
     }
 
-    public static async getPurchaseOrderById(PurchaseOrderId: number): Promise<PurchaseOrder | null> {
+    public static async getPurchaseOrderById(purchaseOrderId: number): Promise<PurchaseOrder | null> {
         try {
-            return await PurchaseOrderRepository.findById(PurchaseOrderId);
+            return await PurchaseOrderRepository.findById(purchaseOrderId);
         } catch (error: any) {
-            throw new Error(`Error al encontrar el recibo: ${error.message}`);
+            throw new Error(`Error al encontrar la orden de compra: ${error.message}`);
         }
     }
 
-    public static async addPurchaseOrder(purchaseOrder: PurchaseOrder) {
+    public static async addPurchaseOrder(purchaseOrder: PurchaseOrder): Promise<PurchaseOrder> {
         try {
             const currentDate = new Date();
             purchaseOrder.date = DateUtils.formatDate(currentDate);
@@ -29,45 +29,45 @@ export class purchaseOrderService {
 
             return await PurchaseOrderRepository.createPurchaseOrder(purchaseOrder);
         } catch (error: any) {
-            throw new Error(`Error al crear orden de compra: ${error.message}`);
+            throw new Error(`Error al crear la orden de compra: ${error.message}`);
         }
     }
 
     public static async modifyPurchaseOrder(purchaseOrderId: number, purchaseOrderData: PurchaseOrder): Promise<PurchaseOrder | null> {
         try {
-            const purchaseOrderFinded = await PurchaseOrderRepository.findById(purchaseOrderId);
+            const purchaseOrderFound = await PurchaseOrderRepository.findById(purchaseOrderId);
             
-            if (purchaseOrderFinded) {
+            if (purchaseOrderFound) {
                 if (purchaseOrderData.date) {
-                    purchaseOrderFinded.date = purchaseOrderData.date;
+                    purchaseOrderFound.date = purchaseOrderData.date;
                 }
                 if (purchaseOrderData.total) {
-                    purchaseOrderFinded.total = purchaseOrderData.total;
+                    purchaseOrderFound.total = purchaseOrderData.total;
                 }
                 if (purchaseOrderData.client_id_fk) {
-                    purchaseOrderFinded.client_id_fk = purchaseOrderData.client_id_fk;
+                    purchaseOrderFound.client_id_fk = purchaseOrderData.client_id_fk;
                 }
-                if (purchaseOrderData.shippingAddress) {
-                    purchaseOrderFinded.shippingAddress = purchaseOrderData.shippingAddress;
+                if (purchaseOrderData.address_id_fk) {
+                    purchaseOrderFound.address_id_fk = purchaseOrderData.address_id_fk;
                 }
-                if (purchaseOrderData.orderStatus) {
-                    purchaseOrderFinded.orderStatus = purchaseOrderData.orderStatus;
+                if (purchaseOrderData.status_id_fk) {
+                    purchaseOrderFound.status_id_fk = purchaseOrderData.status_id_fk;
                 }
-                if(purchaseOrderData.updated_by){
-                    purchaseOrderFinded.updated_by = purchaseOrderData.updated_by;
+                if (purchaseOrderData.updated_by) {
+                    purchaseOrderFound.updated_by = purchaseOrderData.updated_by;
                 }
                 if (purchaseOrderData.deleted !== undefined) {
-                    purchaseOrderFinded.deleted = purchaseOrderData.deleted;
+                    purchaseOrderFound.deleted = purchaseOrderData.deleted;
                 }
-                purchaseOrderFinded.updated_at = DateUtils.formatDate(new Date());
+                purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
                 
-                const updatedPurchaseOrder = await PurchaseOrderRepository.updatePurchaseOrder(purchaseOrderId, purchaseOrderFinded);
+                const updatedPurchaseOrder = await PurchaseOrderRepository.updatePurchaseOrder(purchaseOrderId, purchaseOrderFound);
                 return updatedPurchaseOrder;
             } else {
                 return null; 
             }
         } catch (error: any) {
-            throw new Error(`Error al modificar orden de compra: ${error.message}`);
+            throw new Error(`Error al modificar la orden de compra: ${error.message}`);
         }
     }
     
@@ -75,14 +75,15 @@ export class purchaseOrderService {
         try {
             return await PurchaseOrderRepository.deletePurchaseOrder(purchaseOrderId);
         } catch (error: any) {
-            throw new Error(`Error al eliminar usuario: ${error.message}`);
+            throw new Error(`Error al eliminar la orden de compra: ${error.message}`);
         }
     }
-    public static async deletePurchaseOrderLogic(userId: number): Promise<boolean> {
+
+    public static async deletePurchaseOrderLogic(purchaseOrderId: number): Promise<boolean> {
         try {
-            return await PurchaseOrderRepository.deletePurchaseLogic(userId);
+            return await PurchaseOrderRepository.deletePurchaseLogic(purchaseOrderId);
         } catch (error: any) {
-            throw new Error(`Error deleting user: ${error.message}`);
+            throw new Error(`Error al eliminar lógicamente la orden de compra: ${error.message}`);
         }
     }
 }

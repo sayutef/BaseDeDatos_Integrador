@@ -4,12 +4,11 @@ import { DateUtils } from "../../shared/utils/DateUtils";
 
 export class deliveryService {
 
-
     public static async getAllDelivery(): Promise<Delivery[]> {
         try {
             return await DeliveryRepository.findAll();
         } catch (error: any) {
-            throw new Error(`Error al obtener delivery: ${error.message}`);
+            throw new Error(`Error al obtener deliveries: ${error.message}`);
         }
     }
 
@@ -21,7 +20,7 @@ export class deliveryService {
         }
     }
 
-    public static async addDelivery(delivery: Delivery) {
+    public static async addDelivery(delivery: Delivery): Promise<Delivery> {
         try {
             delivery.date = DateUtils.formatDate(new Date());
             delivery.created_at = DateUtils.formatDate(new Date()); 
@@ -40,14 +39,13 @@ export class deliveryService {
                 throw new Error(`No se encontró el delivery con ID ${deliveryId}`);
             }
             
-            // Actualiza solo los campos definidos en deliveryData
-            if (deliveryData.status) {
-                deliveryFound.status = deliveryData.status;
+            if (deliveryData.status_id_fk !== undefined) {
+                deliveryFound.status_id_fk = deliveryData.status_id_fk;
             }
-            if (deliveryData.purchaseOrder_id_fk) {
+            if (deliveryData.purchaseOrder_id_fk !== undefined) {
                 deliveryFound.purchaseOrder_id_fk = deliveryData.purchaseOrder_id_fk;
             }
-            if (deliveryData.updated_by) {
+            if (deliveryData.updated_by !== undefined) {
                 deliveryFound.updated_by = deliveryData.updated_by;
             }
             if (deliveryData.deleted !== undefined) {
@@ -67,6 +65,7 @@ export class deliveryService {
             throw new Error(`Error al modificar el delivery: ${error.message}`);
         }
     }
+
     public static async deleteDelivery(deliveryId: number): Promise<boolean> {
         try {
             return await DeliveryRepository.deleteDelivery(deliveryId);
@@ -74,11 +73,12 @@ export class deliveryService {
             throw new Error(`Error al eliminar delivery: ${error.message}`);
         }
     }
-    public static async deleteDeliveryLogic(userId: number): Promise<boolean> {
+
+    public static async deleteDeliveryLogic(deliveryId: number): Promise<boolean> {
         try {
-            return await DeliveryRepository.deleteDeliveryLogic(userId);
+            return await DeliveryRepository.deleteDeliveryLogic(deliveryId);
         } catch (error: any) {
-            throw new Error(`Error deleting user: ${error.message}`);
+            throw new Error(`Error al eliminar lógicamente el delivery: ${error.message}`);
         }
     }
 }

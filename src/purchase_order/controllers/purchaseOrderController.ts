@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { purchaseOrderService } from '../services/purchaseOrderServices';
+import { PurchaseOrderService } from '../services/purchaseOrderServices';
 
 export const getAllPurchaseOrder = async (_req: Request, res: Response) => {
     try {
-        const users = await purchaseOrderService.getAllPurchaseOrder();
-        res.status(200).json(users);
+        const purchaseOrders = await PurchaseOrderService.getAllPurchaseOrder();
+        res.status(200).json(purchaseOrders);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
@@ -13,9 +13,9 @@ export const getAllPurchaseOrder = async (_req: Request, res: Response) => {
 export const getPurchaseOrderById = async (req: Request, res: Response) => {
     try {
         const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const user = await purchaseOrderService.getPurchaseOrderById(purchaseOrderId);
-        if (user) {
-            res.status(200).json(user);
+        const purchaseOrder = await PurchaseOrderService.getPurchaseOrderById(purchaseOrderId);
+        if (purchaseOrder) {
+            res.status(200).json(purchaseOrder);
         } else {
             res.status(404).json({ message: 'Orden no encontrada.' });
         }
@@ -26,7 +26,7 @@ export const getPurchaseOrderById = async (req: Request, res: Response) => {
 
 export const createPurchaseOrder = async (req: Request, res: Response) => {
     try {
-        const newPurchaseOrder = await purchaseOrderService.addPurchaseOrder(req.body);
+        const newPurchaseOrder = await PurchaseOrderService.addPurchaseOrder(req.body);
         res.status(201).json(newPurchaseOrder);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -36,7 +36,7 @@ export const createPurchaseOrder = async (req: Request, res: Response) => {
 export const updatePurchaseOrder = async (req: Request, res: Response) => {
     try {
         const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const updatedPurchaseOrder = await purchaseOrderService.modifyPurchaseOrder(purchaseOrderId, req.body);
+        const updatedPurchaseOrder = await PurchaseOrderService.modifyPurchaseOrder(purchaseOrderId, req.body);
         if (updatedPurchaseOrder) {
             res.status(200).json(updatedPurchaseOrder);
         } else {
@@ -50,7 +50,7 @@ export const updatePurchaseOrder = async (req: Request, res: Response) => {
 export const deletePurchaseOrder = async (req: Request, res: Response) => {
     try {
         const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const deleted = await purchaseOrderService.deletedPurchaseOrder(purchaseOrderId);
+        const deleted = await PurchaseOrderService.deletedPurchaseOrder(purchaseOrderId);
         if (deleted) {
             res.status(200).json({ message: 'Orden eliminada correctamente.' });
         } else {
@@ -60,16 +60,17 @@ export const deletePurchaseOrder = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 export const deleteLogicalPurchaseOrder = async (req: Request, res: Response) => {
     try {
-        const userId = parseInt(req.params.user_id, 10);
-        const success = await purchaseOrderService.deletePurchaseOrderLogic(userId);
+        const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
+        const success = await PurchaseOrderService.deletePurchaseOrderLogic(purchaseOrderId);
         if (success) {
-            res.status(200).json({ message: 'User logically deleted successfully.' });
+            res.status(200).json({ message: 'Orden eliminada lógicamente correctamente.' });
         } else {
-            res.status(404).json({ message: 'User not found or already logically deleted.' });
+            res.status(404).json({ message: 'Orden no encontrada o ya eliminada lógicamente.' });
         }
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };

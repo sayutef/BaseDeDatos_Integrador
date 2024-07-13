@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { productService } from "../services/productService";
 
-
 export const getAllProduct = async (_req: Request, res: Response) => {
     try {
         const products = await productService.getAllProduct();
@@ -13,12 +12,12 @@ export const getAllProduct = async (_req: Request, res: Response) => {
 
 export const getProductrById = async (req: Request, res: Response) => {
     try {
-        const productId = parseInt(req.params.product_id, 10);
-        const product = await productService.getProductById(productId);
+        const product_id = parseInt(req.params.product_id, 10);
+        const product = await productService.getProductById(product_id);
         if (product) {
             res.status(200).json(product);
         } else {
-            res.status(404).json({ message: 'Producto no encontrado.' });
+            res.status(404).json({ message: 'Product not found.' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -36,12 +35,12 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProdct = async (req: Request, res: Response) => {
     try {
-        const productId = parseInt(req.params.product_id, 10);
-        const updatedUser = await productService.modifyProduct(productId, req.body);
-        if (updatedUser) {
-            res.status(200).json(updatedUser);
+        const product_id = parseInt(req.params.product_id, 10);
+        const updatedProduct = await productService.modifyProduct(product_id, req.body);
+        if (updatedProduct) {
+            res.status(200).json(updatedProduct);
         } else {
-            res.status(404).json({ message: 'Producto no encontrado o no se pudo actualizar.' });
+            res.status(404).json({ message: 'Product not found or could not be updated.' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -50,27 +49,28 @@ export const updateProdct = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
-        const productId = parseInt(req.params.product_id, 10);
-        const deleted = await productService.deletedroduct(productId);
+        const product_id = parseInt(req.params.product_id, 10);
+        const deleted = await productService.deleteProduct(product_id);
         if (deleted) {
-            res.status(200).json({ message: 'Producto eliminado correctamente.' });
+            res.status(200).json({ message: 'Product deleted successfully.' });
         } else {
-            res.status(404).json({ message: 'Producto no encontrado o no se pudo eliminar.' });
+            res.status(404).json({ message: 'Product not found or could not be deleted.' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
+
 export const deleteLogicalProduct = async (req: Request, res: Response) => {
     try {
-        const userId = parseInt(req.params.user_id, 10);
-        const success = await productService.deleteProductLogic(userId);
+        const product_id = parseInt(req.params.product_id, 10);
+        const success = await productService.deleteProductLogic(product_id);
         if (success) {
-            res.status(200).json({ message: 'User logically deleted successfully.' });
+            res.status(200).json({ message: 'Product logically deleted successfully.' });
         } else {
-            res.status(404).json({ message: 'User not found or already logically deleted.' });
+            res.status(404).json({ message: 'Product not found or already logically deleted.' });
         }
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };

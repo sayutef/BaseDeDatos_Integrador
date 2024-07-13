@@ -37,13 +37,15 @@ export const updateDelivery = async (req: Request, res: Response) => {
     try {
         const deliveryId = parseInt(req.params.delivery_id, 10);
         const updatedDelivery = await deliveryService.modifyDelivery(deliveryId, req.body);
-
-        res.status(200).json(updatedDelivery);
+        if (updatedDelivery) {
+            res.status(200).json(updatedDelivery);
+        } else {
+            res.status(404).json({ message: 'Delivery no encontrado o no se pudo actualizar.' });
+        }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 export const deleteDelivery = async (req: Request, res: Response) => {
     try {
@@ -58,16 +60,17 @@ export const deleteDelivery = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 export const deleteLogicalDelivery = async (req: Request, res: Response) => {
     try {
-        const userId = parseInt(req.params.user_id, 10);
-        const success = await deliveryService.deleteDeliveryLogic(userId);
+        const deliveryId = parseInt(req.params.delivery_id, 10);
+        const success = await deliveryService.deleteDeliveryLogic(deliveryId);
         if (success) {
-            res.status(200).json({ message: 'User logically deleted successfully.' });
+            res.status(200).json({ message: 'Delivery eliminado lógicamente correctamente.' });
         } else {
-            res.status(404).json({ message: 'User not found or already logically deleted.' });
+            res.status(404).json({ message: 'Delivery no encontrado o ya eliminado lógicamente.' });
         }
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };

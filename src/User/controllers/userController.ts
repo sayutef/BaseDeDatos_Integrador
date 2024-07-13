@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
-import { userService } from '../services/userService';
+import { UserService } from '../services/userService';
 import jwt from 'jsonwebtoken';
 
 const secretKey = process.env.SECRET || '';
 
 export const loginUser = async (req: Request, res: Response) => {
-    const { name, password } = req.body;
+    const { email, password } = req.body;
     try {
-        const token = await userService.login(name, password);
+        const token = await UserService.login(email, password);
 
         if (!token) {
-            res.status(401).json({ message: 'Invalid name or password' });
+            res.status(401).json({ message: 'Invalid email or password' });
         } else {
             const payload = jwt.verify(token, secretKey) as any;
             res.status(200).json({ token, user_id: payload.user_id });
@@ -23,12 +23,12 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
-        const users = await userService.getAllUser();
-        if(users){
-            res.status(201).json(users);
-          }else{
-            res.status(404).json({ message: 'Sin registros' });
-          }
+        const users = await UserService.getAllUsers();
+        if (users) {
+            res.status(200).json(users);
+        } else {
+            res.status(404).json({ message: 'No records found' });
+        }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
@@ -37,11 +37,11 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.user_id, 10);
-        const user = await userService.getUserById(userId);
+        const user = await UserService.getUserById(userId);
         if (user) {
             res.status(200).json(user);
         } else {
-            res.status(404).json({ message: 'Usuario no encontrado.' });
+            res.status(404).json({ message: 'User not found' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -50,12 +50,12 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const newUser = await userService.addUser(req.body);
-        if(newUser){
+        const newUser = await UserService.addUser(req.body);
+        if (newUser) {
             res.status(201).json(newUser);
-          }else{
-            res.status(404).json({ message: 'Algo salio mal' });
-          }
+        } else {
+            res.status(404).json({ message: 'Something went wrong' });
+        }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
@@ -64,11 +64,11 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.user_id, 10);
-        const updatedUser = await userService.modifyUser(userId, req.body);
+        const updatedUser = await UserService.modifyUser(userId, req.body);
         if (updatedUser) {
             res.status(200).json(updatedUser);
         } else {
-            res.status(404).json({ message: 'Usuario no encontrado o no se pudo actualizar.' });
+            res.status(404).json({ message: 'User not found or could not be updated' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -78,11 +78,11 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.user_id, 10);
-        const deleted = await userService.deletedUser(userId);
+        const deleted = await UserService.deleteUser(userId);
         if (deleted) {
-            res.status(200).json({ message: 'Usuario eliminado correctamente.' });
+            res.status(200).json({ message: 'User deleted successfully' });
         } else {
-            res.status(404).json({ message: 'Usuario no encontrado o no se pudo eliminar.' });
+            res.status(404).json({ message: 'User not found or could not be deleted' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -92,13 +92,13 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const deleteLogicalUser = async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.user_id, 10);
-        const success = await userService.deleteUserLogic(userId);
+        const success = await UserService.deleteUserLogic(userId);
         if (success) {
-            res.status(200).json({ message: 'User logically deleted successfully.' });
+            res.status(200).json({ message: 'User logically deleted successfully' });
         } else {
-            res.status(404).json({ message: 'User not found or already logically deleted.' });
+            res.status(404).json({ message: 'User not found or already logically deleted' });
         }
-    } catch (error : any) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };

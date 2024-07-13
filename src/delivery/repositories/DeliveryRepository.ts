@@ -11,8 +11,8 @@ export class DeliveryRepository {
                 if (error) {
                     reject(error);
                 } else {
-                    const users: Delivery[] = results as Delivery[];
-                    resolve(users);
+                    const deliveries: Delivery[] = results as Delivery[];
+                    resolve(deliveries);
                 }
             });
         });
@@ -25,9 +25,9 @@ export class DeliveryRepository {
                 if (error) {
                     reject(error);
                 } else {
-                    const users: Delivery[] = results as Delivery[];
-                    if (users.length > 0) {
-                        resolve(users[0]);
+                    const deliveries: Delivery[] = results as Delivery[];
+                    if (deliveries.length > 0) {
+                        resolve(deliveries[0]);
                     } else {
                         resolve(null);
                     }
@@ -37,16 +37,16 @@ export class DeliveryRepository {
     }
 
     public static async createDelivery(delivery: Delivery): Promise<Delivery> {
-        const { purchaseOrder_id_fk, created_at, status, date, created_by, updated_at, updated_by, deleted } = delivery;
-        const query = `INSERT INTO Delivery (purchaseOrder_id_fk, created_at, status, date, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        const values = [purchaseOrder_id_fk, created_at, status, date, created_by, updated_at, updated_by, deleted ? 1 : 0];
+        const { purchaseOrder_id_fk, created_at, status_id_fk, date, created_by, updated_at, updated_by, deleted } = delivery;
+        const query = `INSERT INTO delivery (purchaseOrder_id_fk, created_at, status_id_fk, date, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [purchaseOrder_id_fk, created_at, status_id_fk, date, created_by, updated_at, updated_by, deleted ? 1 : 0];
 
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
-                    const createDeliveryId = (result as any).insertId;
+                    const createDeliveryId = (result as ResultSetHeader).insertId;
                     const createdDelivery: Delivery = { ...delivery, delivery_id: createDeliveryId };
                     resolve(createdDelivery);
                 }
@@ -55,28 +55,28 @@ export class DeliveryRepository {
     }
     
     public static async updateDelivery(deliveryId: number, deliveryData: Delivery): Promise<Delivery | null> {
-        const { purchaseOrder_id_fk, status, updated_at, updated_by, deleted } = deliveryData;
-        const query = `UPDATE delivery SET purchaseOrder_id_fk = ?, status = ?, updated_by = ?, updated_at= ?, deleted = ? WHERE delivery_id = ?`;
-        const values =  [purchaseOrder_id_fk, status, updated_by,updated_at, deleted ? 1 : 0, deliveryId];
+        const { purchaseOrder_id_fk, status_id_fk, updated_at, updated_by, deleted } = deliveryData;
+        const query = `UPDATE delivery SET purchaseOrder_id_fk = ?, status_id_fk = ?, updated_by = ?, updated_at = ?, deleted = ? WHERE delivery_id = ?`;
+        const values = [purchaseOrder_id_fk, status_id_fk, updated_by, updated_at, deleted ? 1 : 0, deliveryId];
         return new Promise((resolve, reject) => {
             connection.query(query, values, (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
-                    if ((result as any).affectedRows > 0) {
+                    if ((result as ResultSetHeader).affectedRows > 0) {
                         resolve({ ...deliveryData, delivery_id: deliveryId });
                     } else {
-                        resolve(null); 
+                        resolve(null);
                     }
                 }
             });
         });
     }
 
-    public static async deleteDelivery(user_id: number): Promise<boolean> {
+    public static async deleteDelivery(delivery_id: number): Promise<boolean> {
         const query = 'DELETE FROM delivery WHERE delivery_id = ?';
         return new Promise((resolve, reject) => {
-            connection.query(query, [user_id], (error, result) => {
+            connection.query(query, [delivery_id], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -89,10 +89,11 @@ export class DeliveryRepository {
             });
         });
     }
-    public static async deleteDeliveryLogic(role_id: number): Promise<boolean> {
-        const query = 'UPDATE delivery SET deleted = 1 WHERE role_id = ?';
+
+    public static async deleteDeliveryLogic(delivery_id: number): Promise<boolean> {
+        const query = 'UPDATE delivery SET deleted = 1 WHERE delivery_id = ?';
         return new Promise((resolve, reject) => {
-            connection.query(query, [role_id], (error, result) => {
+            connection.query(query, [delivery_id], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -106,5 +107,3 @@ export class DeliveryRepository {
         });
     }
 }
-
-
