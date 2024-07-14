@@ -55,7 +55,7 @@ export class CategoryService {
 
             const updatedCategory = await CategoryRepository.updateCategory(categoryId, {
                 ...categoryFound,
-                deleted: categoryData.deleted || false // Set deleted to false if undefined
+                deleted: categoryData.deleted || false 
             });
 
             if (!updatedCategory) {

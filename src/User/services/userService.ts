@@ -1,17 +1,16 @@
-import { UserRepository } from "../repositories/UserRepository";
-import { User } from "../models/User";
-import { DateUtils } from "../../shared/utils/DateUtils";
+import { UserRepository } from '../repositories/UserRepository';
+import { User } from '../models/User';
+import { DateUtils } from '../../shared/utils/DateUtils';
 import bcrypt from 'bcrypt';
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const secretKey = process.env.SECRET || "";
+const secretKey = process.env.SECRET || '';
 const saltRounds = 10;
 
 export class UserService {
-
     public static async login(email: string, password: string) {
         try {
             const user = await this.getUserByEmail(email);
@@ -27,11 +26,10 @@ export class UserService {
             const payload = {
                 user_id: user.user_id,
                 role_id_fk: user.role_id_fk,
-                first_name:user.first_name,
-                email: user.email
+                first_name: user.first_name,
+                email: user.email,
             };
             return jwt.sign(payload, secretKey, { expiresIn: '24h' });
-
         } catch (error: any) {
             throw new Error(`Error al iniciar sesión: ${error.message}`);
         }
@@ -55,7 +53,7 @@ export class UserService {
 
     public static async getUserByEmail(email: string): Promise<User | null> {
         try {
-            return await UserRepository.findByName(email);
+            return await UserRepository.findByEmail(email);
         } catch (error: any) {
             throw new Error(`Error al encontrar usuario: ${error.message}`);
         }
@@ -93,7 +91,7 @@ export class UserService {
                 if (userData.role_id_fk) {
                     userFound.role_id_fk = userData.role_id_fk;
                 }
-                if(userData.updated_by){
+                if (userData.updated_by) {
                     userFound.updated_by = userData.updated_by;
                 }
                 if (userData.deleted !== undefined) {
@@ -122,6 +120,19 @@ export class UserService {
             return await UserRepository.deleteLogic(userId);
         } catch (error: any) {
             throw new Error(`Error al eliminar usuario lógicamente: ${error.message}`);
+        }
+    }
+
+    public static async userExists(identifier: string): Promise<boolean> {
+        if (!isNaN(parseInt(identifier))) {
+            // Verificar por ID
+            const userId = parseInt(identifier, 10);
+            const userById = await UserRepository.findById(userId);
+            return !!userById; // Devuelve true si se encontró un usuario con ese ID
+        } else {
+            // Verificar por correo electrónico
+            const userByEmail = await UserRepository.findByEmail(identifier);
+            return !!userByEmail; // Devuelve true si se encontró un usuario con ese correo electrónico
         }
     }
 }

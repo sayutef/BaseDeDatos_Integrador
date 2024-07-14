@@ -3,7 +3,7 @@ export interface Product{
     name: string;
     description: string ;
     price: number ;
-    stock:number;
+    stock: number;
     category_id_fk: number;
     created_at: string;
     created_by: string ;

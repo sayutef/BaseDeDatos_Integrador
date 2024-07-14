@@ -4,89 +4,87 @@ import { DateUtils } from "../../shared/utils/DateUtils";
 
 export class PurchaseOrderService {
 
-    public static async getAllPurchaseOrder(): Promise<PurchaseOrder[]> {
+    public static async getAllPurchaseOrders(): Promise<PurchaseOrder[]> {
         try {
             return await PurchaseOrderRepository.findAll();
         } catch (error: any) {
-            throw new Error(`Error al obtener las órdenes de compra: ${error.message}`);
+            throw new Error(`Error retrieving purchase orders: ${error.message}`);
         }
     }
 
-    public static async getPurchaseOrderById(purchaseOrderId: number): Promise<PurchaseOrder | null> {
+    public static async getPurchaseOrderById(purchaseOrder_id: number): Promise<PurchaseOrder | null> {
         try {
-            return await PurchaseOrderRepository.findById(purchaseOrderId);
+            return await PurchaseOrderRepository.findById(purchaseOrder_id);
         } catch (error: any) {
-            throw new Error(`Error al encontrar la orden de compra: ${error.message}`);
+            throw new Error(`Error finding purchase order: ${error.message}`);
         }
     }
 
     public static async addPurchaseOrder(purchaseOrder: PurchaseOrder): Promise<PurchaseOrder> {
         try {
-            const currentDate = new Date();
-            purchaseOrder.date = DateUtils.formatDate(currentDate);
-            purchaseOrder.created_at = DateUtils.formatDate(currentDate);
-            purchaseOrder.updated_at = DateUtils.formatDate(currentDate);
-
+            purchaseOrder.created_at = DateUtils.formatDate(new Date());
+            purchaseOrder.updated_at = DateUtils.formatDate(new Date());
             return await PurchaseOrderRepository.createPurchaseOrder(purchaseOrder);
         } catch (error: any) {
-            throw new Error(`Error al crear la orden de compra: ${error.message}`);
+            throw new Error(`Error creating purchase order: ${error.message}`);
         }
     }
 
-    public static async modifyPurchaseOrder(purchaseOrderId: number, purchaseOrderData: PurchaseOrder): Promise<PurchaseOrder | null> {
+    public static async updatePurchaseOrder(purchaseOrder_id: number, purchaseOrderData: Partial<PurchaseOrder>): Promise<PurchaseOrder | null> {
         try {
-            const purchaseOrderFound = await PurchaseOrderRepository.findById(purchaseOrderId);
-            
-            if (purchaseOrderFound) {
-                if (purchaseOrderData.date) {
-                    purchaseOrderFound.date = purchaseOrderData.date;
-                }
-                if (purchaseOrderData.total) {
-                    purchaseOrderFound.total = purchaseOrderData.total;
-                }
-                if (purchaseOrderData.client_id_fk) {
-                    purchaseOrderFound.client_id_fk = purchaseOrderData.client_id_fk;
-                }
-                if (purchaseOrderData.street) {
-                    purchaseOrderFound.street = purchaseOrderData.street;
-                }
-                if (purchaseOrderData.city) {
-                    purchaseOrderFound.city = purchaseOrderData.city;
-                }
-                if (purchaseOrderData.status_id_fk) {
-                    purchaseOrderFound.status_id_fk = purchaseOrderData.status_id_fk;
-                }
-                if (purchaseOrderData.updated_by) {
-                    purchaseOrderFound.updated_by = purchaseOrderData.updated_by;
-                }
-                if (purchaseOrderData.deleted !== undefined) {
-                    purchaseOrderFound.deleted = purchaseOrderData.deleted;
-                }
-                purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
-                
-                const updatedPurchaseOrder = await PurchaseOrderRepository.updatePurchaseOrder(purchaseOrderId, purchaseOrderFound);
-                return updatedPurchaseOrder;
-            } else {
-                return null; 
+            const purchaseOrderFound = await PurchaseOrderRepository.findById(purchaseOrder_id);
+
+            if (!purchaseOrderFound) {
+                throw new Error(`Purchase order with ID ${purchaseOrder_id} not found.`);
             }
+
+            if (purchaseOrderData.date !== undefined) {
+                purchaseOrderFound.date = purchaseOrderData.date;
+            }
+            if (purchaseOrderData.total !== undefined) {
+                purchaseOrderFound.total = purchaseOrderData.total;
+            }
+            if (purchaseOrderData.user_id_fk !== undefined) {
+                purchaseOrderFound.user_id_fk = purchaseOrderData.user_id_fk;
+            }
+            if (purchaseOrderData.street !== undefined) {
+                purchaseOrderFound.street = purchaseOrderData.street;
+            }
+            if (purchaseOrderData.city !== undefined) {
+                purchaseOrderFound.city = purchaseOrderData.city;
+            }
+            if (purchaseOrderData.status_id_fk !== undefined) {
+                purchaseOrderFound.status_id_fk = purchaseOrderData.status_id_fk;
+            }
+            if (purchaseOrderData.updated_by !== undefined) {
+                purchaseOrderFound.updated_by = purchaseOrderData.updated_by;
+            }
+            if (purchaseOrderData.updated_at !== undefined) {
+                purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
+            }
+            if (purchaseOrderData.deleted !== undefined) {
+                purchaseOrderFound.deleted = purchaseOrderData.deleted;
+            }
+
+            return await PurchaseOrderRepository.updatePurchaseOrder(purchaseOrder_id, purchaseOrderFound);
         } catch (error: any) {
-            throw new Error(`Error al modificar la orden de compra: ${error.message}`);
-        }
-    }
-    
-    public static async deletedPurchaseOrder(purchaseOrderId: number): Promise<boolean> {
-        try {
-            return await PurchaseOrderRepository.deletePurchaseOrder(purchaseOrderId);
-        } catch (error: any) {
-            throw new Error(`Error al eliminar la orden de compra: ${error.message}`);
+            throw new Error(`Error modifying purchase order: ${error.message}`);
         }
     }
 
-    public static async deletedLogicalPurchaseOrder(purchaseOrderId: number): Promise<boolean> {
+    public static async deletePurchaseOrder(purchaseOrder_id: number): Promise<boolean> {
         try {
-            return await PurchaseOrderRepository.deletePurchaseLogic(purchaseOrderId);
+            return await PurchaseOrderRepository.deletePurchaseOrder(purchaseOrder_id);
         } catch (error: any) {
-            throw new Error(`Error al eliminar la orden de compra lógicamente: ${error.message}`);
+            throw new Error(`Error deleting purchase order: ${error.message}`);
+        }
+    }
+
+    public static async deleteLogicalPurchaseOrder(purchaseOrder_id: number): Promise<boolean> {
+        try {
+            return await PurchaseOrderRepository.deletePurchaseOrderLogic(purchaseOrder_id);
+        } catch (error: any) {
+            throw new Error(`Error logically deleting purchase order: ${error.message}`);
         }
     }
 }

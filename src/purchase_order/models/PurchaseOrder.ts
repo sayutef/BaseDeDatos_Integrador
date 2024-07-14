@@ -1,11 +1,11 @@
-export interface PurchaseOrder{
-    purchaseOrder_id : number | null;
+export interface PurchaseOrder {
+    purchaseOrder_id: number | null;
     date: string;
-    total: string;
-    client_id_fk : number;
-    street : string,
-    city : string,
-    status_id_fk:number;
+    total: number;
+    user_id_fk: number;
+    street: string;
+    city: string;
+    status_id_fk: number;
     created_at: string;
     created_by: string;
     updated_at: string;

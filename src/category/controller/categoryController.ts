@@ -1,4 +1,4 @@
-// controllers/CategoryController.ts
+
 import { Request, Response } from "express";
 import { CategoryService } from "../services/categoryService";
 

@@ -1,76 +1,80 @@
 import { Request, Response } from "express";
-import { productService } from "../services/productService";
+import { ProductService } from "../services/productService";
+import { Product } from "../models/Product";
 
-export const getAllProduct = async (_req: Request, res: Response) => {
+export const getAllProducts = async (_req: Request, res: Response): Promise<Response> => {
     try {
-        const products = await productService.getAllProduct();
-        res.status(200).json(products);
+        const products = await ProductService.getAllProducts();
+        return res.status(200).json(products);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error retrieving products: ${error.message}` });
     }
 };
 
-export const getProductrById = async (req: Request, res: Response) => {
+
+export const getProductById = async (req: Request, res: Response): Promise<Response> => {
+    const { product_id } = req.params;
     try {
-        const product_id = parseInt(req.params.product_id, 10);
-        const product = await productService.getProductById(product_id);
+        const product = await ProductService.getProductById(Number(product_id));
         if (product) {
-            res.status(200).json(product);
+            return res.status(200).json(product);
         } else {
-            res.status(404).json({ message: 'Product not found.' });
+            return res.status(404).json({ message: `Product not found` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error finding product: ${error.message}` });
     }
 };
 
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response): Promise<Response> => {
+    const productData: Product = req.body;
     try {
-        const newProduct = await productService.addProduct(req.body);
-        res.status(201).json(newProduct);
+        const newProduct = await ProductService.addProduct(productData);
+        return res.status(201).json(newProduct);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error creating product: ${error.message}` });
     }
 };
 
-export const updateProdct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { product_id } = req.params;
+    const productData: Partial<Product> = req.body;
     try {
-        const product_id = parseInt(req.params.product_id, 10);
-        const updatedProduct = await productService.modifyProduct(product_id, req.body);
+        const updatedProduct = await ProductService.updateProduct(Number(product_id), productData);
         if (updatedProduct) {
-            res.status(200).json(updatedProduct);
+            return res.status(200).json(updatedProduct);
         } else {
-            res.status(404).json({ message: 'Product not found or could not be updated.' });
+            return res.status(404).json({ message: `Product not found` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error modifying product: ${error.message}` });
     }
 };
 
-export const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { product_id } = req.params;
     try {
-        const product_id = parseInt(req.params.product_id, 10);
-        const deleted = await productService.deleteProduct(product_id);
-        if (deleted) {
-            res.status(200).json({ message: 'Product deleted successfully.' });
+        const result = await ProductService.deleteProduct(Number(product_id));
+        if (result) {
+            return res.status(204).json({ message: `Product deleted successfully` });
         } else {
-            res.status(404).json({ message: 'Product not found or could not be deleted.' });
+            return res.status(404).json({ message: `Product not found` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error deleting product: ${error.message}` });
     }
 };
 
-export const deleteLogicalProduct = async (req: Request, res: Response) => {
+export const deleteLogicalProduct = async (req: Request, res: Response): Promise<Response> => {
+    const { product_id } = req.params;
     try {
-        const product_id = parseInt(req.params.product_id, 10);
-        const success = await productService.deleteProductLogic(product_id);
-        if (success) {
-            res.status(200).json({ message: 'Product logically deleted successfully.' });
+        const result = await ProductService.deleteLogicalProduct(Number(product_id));
+        if (result) {
+            return res.status(204).json({ message: `Product logically deleted successfully` });
         } else {
-            res.status(404).json({ message: 'Product not found or already logically deleted.' });
+            return res.status(404).json({ message: `Product not found` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error logically deleting product: ${error.message}` });
     }
 };

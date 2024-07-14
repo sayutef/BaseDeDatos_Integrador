@@ -1,4 +1,4 @@
-// controllers/statusController.ts
+
 import { Request, Response } from 'express';
 import { StatusService } from '../service/statusService';
 

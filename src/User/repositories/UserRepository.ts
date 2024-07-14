@@ -1,10 +1,10 @@
-import { ResultSetHeader } from "mysql2";
-import connection from "../../shared/config/database";
-import { User } from "../models/User";
+import { ResultSetHeader } from 'mysql2';
+import connection from '../../shared/config/database';
+import { User } from '../models/User';
 
 export class UserRepository {
     public static async findAll(): Promise<User[]> {
-        const query = "SELECT * FROM user WHERE deleted = 0";
+        const query = 'SELECT * FROM user WHERE deleted = 0';
         return new Promise((resolve, reject) => {
             connection.query(query, (error, results) => {
                 if (error) {
@@ -18,7 +18,7 @@ export class UserRepository {
     }
 
     public static async findById(user_id: number): Promise<User | null> {
-        const query = "SELECT * FROM user WHERE user_id = ? AND deleted = 0";
+        const query = 'SELECT * FROM user WHERE user_id = ? AND deleted = 0';
         return new Promise((resolve, reject) => {
             connection.query(query, [user_id], (error, results) => {
                 if (error) {
@@ -35,10 +35,10 @@ export class UserRepository {
         });
     }
 
-    public static async findByName(name: string): Promise<User | null> {
-        const query = "SELECT * FROM user WHERE email = ?";
+    public static async findByEmail(email: string): Promise<User | null> {
+        const query = 'SELECT * FROM user WHERE email = ? AND deleted = 0';
         return new Promise((resolve, reject) => {
-            connection.query(query, [name], (error, results) => {
+            connection.query(query, [email], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

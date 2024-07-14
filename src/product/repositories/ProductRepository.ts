@@ -1,9 +1,10 @@
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import connection from "../../shared/config/database";
 import { Product } from "../models/Product";
 
 export class ProductRepository {
 
+   
     public static async findAll(): Promise<Product[]> {
         const query = "SELECT * FROM product";
         return new Promise((resolve, reject) => {
@@ -11,17 +12,41 @@ export class ProductRepository {
                 if (error) {
                     reject(error);
                 } else {
-                    const products: Product[] = results as Product[];
+                    const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
+                        ...row,
+                        price: parseFloat(row.price as string) // Convertir el precio a número si es necesario
+                    })) as Product[];
                     resolve(products);
                 }
             });
         });
     }
 
+
+
+
     public static async findById(product_id: number): Promise<Product | null> {
         const query = "SELECT * FROM product WHERE product_id = ?";
         return new Promise((resolve, reject) => {
             connection.query(query, [product_id], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const products: Product[] = results as Product[];
+                    if (products.length > 0) {
+                        resolve(products[0]);
+                    } else {
+                        resolve(null);
+                    }
+                }
+            });
+        });
+    }
+
+    public static async findByPrice(price: number): Promise<Product | null> {
+        const query = "SELECT * FROM product WHERE price = ?";
+        return new Promise((resolve, reject) => {
+            connection.query(query, [price], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

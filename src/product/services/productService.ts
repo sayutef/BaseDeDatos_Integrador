@@ -2,9 +2,9 @@ import { ProductRepository } from "../repositories/ProductRepository";
 import { Product } from "../models/Product";
 import { DateUtils } from "../../shared/utils/DateUtils";
 
-export class productService {
+export class ProductService {
 
-    public static async getAllProduct(): Promise<Product[]> {
+    public static async getAllProducts(): Promise<Product[]> {
         try {
             return await ProductRepository.findAll();
         } catch (error: any) {
@@ -30,7 +30,7 @@ export class productService {
         }
     }
 
-    public static async modifyProduct(product_id: number, productData: Partial<Product>): Promise<Product | null> {
+    public static async updateProduct(product_id: number, productData: Partial<Product>): Promise<Product | null> {
         try {
             const productFound = await ProductRepository.findById(product_id);
 
@@ -77,7 +77,7 @@ export class productService {
         }
     }
 
-    public static async deleteProductLogic(product_id: number): Promise<boolean> {
+    public static async deleteLogicalProduct(product_id: number): Promise<boolean> {
         try {
             return await ProductRepository.deleteProductLogic(product_id);
         } catch (error: any) {

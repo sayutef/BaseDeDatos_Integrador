@@ -24,19 +24,15 @@ export const loginUser = async (req: Request, res: Response) => {
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
         const users = await UserService.getAllUsers();
-        if (users) {
-            res.status(200).json(users);
-        } else {
-            res.status(404).json({ message: 'No records found' });
-        }
+        res.status(200).json(users);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
 
 export const getUserById = async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.user_id, 10);
     try {
-        const userId = parseInt(req.params.user_id, 10);
         const user = await UserService.getUserById(userId);
         if (user) {
             res.status(200).json(user);
@@ -50,20 +46,24 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const newUser = await UserService.addUser(req.body);
-        if (newUser) {
-            res.status(201).json(newUser);
-        } else {
-            res.status(404).json({ message: 'Something went wrong' });
+        const { email } = req.body;
+        
+        const exists = await UserService.userExists(email);
+        if (exists) {
+            res.status(409).json({ message: 'User already exists' });
+            return;
         }
+
+        const newUser = await UserService.addUser(req.body);
+        res.status(201).json(newUser);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.user_id, 10);
     try {
-        const userId = parseInt(req.params.user_id, 10);
         const updatedUser = await UserService.modifyUser(userId, req.body);
         if (updatedUser) {
             res.status(200).json(updatedUser);
@@ -76,8 +76,8 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.user_id, 10);
     try {
-        const userId = parseInt(req.params.user_id, 10);
         const deleted = await UserService.deleteUser(userId);
         if (deleted) {
             res.status(200).json({ message: 'User deleted successfully' });
@@ -90,8 +90,8 @@ export const deleteUser = async (req: Request, res: Response) => {
 };
 
 export const deleteLogicalUser = async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.user_id, 10);
     try {
-        const userId = parseInt(req.params.user_id, 10);
         const success = await UserService.deleteUserLogic(userId);
         if (success) {
             res.status(200).json({ message: 'User logically deleted successfully' });
@@ -100,5 +100,15 @@ export const deleteLogicalUser = async (req: Request, res: Response) => {
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const userExists = async (req: Request, res: Response) => {
+    const { identifier } = req.params;
+    try {
+        const exists = await UserService.userExists(identifier);
+        res.json({ exists });
+    } catch (error : any) {
+        res.status(500).json({ message: error.message });
     }
 };
