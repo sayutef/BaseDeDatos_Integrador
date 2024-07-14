@@ -3,7 +3,7 @@ import connection from "../../shared/config/database";
 import { PurchaseOrder } from "../models/PurchaseOrder";
 
 export class PurchaseOrderRepository {
-
+    
     public static async findAll(): Promise<PurchaseOrder[]> {
         const query = "SELECT * FROM purchaseorder";
         return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ export class PurchaseOrderRepository {
     }
 
     public static async createPurchaseOrder(purchaseOrder: PurchaseOrder): Promise<PurchaseOrder> {
-        const query = `INSERT INTO purchaseorder (date, total, client_id_fk, address_id_fk, status_id_fk, created_at, created_by, updated_at, updated_by, deleted) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `INSERT INTO purchaseorder (date, total, client_id_fk, street, city, status_id_fk, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         return new Promise((resolve, reject) => {
             connection.execute(
                 query,
@@ -45,14 +45,15 @@ export class PurchaseOrderRepository {
                     purchaseOrder.date,
                     purchaseOrder.total,
                     purchaseOrder.client_id_fk,
-                    purchaseOrder.address_id_fk,
+                    purchaseOrder.street,
+                    purchaseOrder.city,
                     purchaseOrder.status_id_fk,
                     purchaseOrder.created_at,
                     purchaseOrder.created_by,
                     purchaseOrder.updated_at,
                     purchaseOrder.updated_by,
-                    purchaseOrder.deleted ? 1 : 0  // Convert boolean to 0 or 1 for MySQL
-                ].map(value => (value === undefined ? null : value)),  // Map undefined to null
+                    purchaseOrder.deleted ? 1 : 0
+                ].map(value => (value === undefined ? null : value)), 
                 (error, result) => {
                     if (error) {
                         reject(error);
@@ -67,7 +68,7 @@ export class PurchaseOrderRepository {
     }
 
     public static async updatePurchaseOrder(purchaseOrder_id: number, purchaseOrderData: PurchaseOrder): Promise<PurchaseOrder | null> {
-        const query = 'UPDATE purchaseorder SET date = ?, total = ?, client_id_fk = ?, address_id_fk = ?, status_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE purchaseOrder_id = ?';
+        const query = 'UPDATE purchaseorder SET date = ?, total = ?, client_id_fk = ?, street = ?, city = ?, status_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE purchaseOrder_id = ?';
         return new Promise((resolve, reject) => {
             connection.execute(
                 query,
@@ -75,13 +76,14 @@ export class PurchaseOrderRepository {
                     purchaseOrderData.date,
                     purchaseOrderData.total,
                     purchaseOrderData.client_id_fk,
-                    purchaseOrderData.address_id_fk,
+                    purchaseOrderData.street,
+                    purchaseOrderData.city,
                     purchaseOrderData.status_id_fk,
                     purchaseOrderData.updated_at,
                     purchaseOrderData.updated_by,
-                    purchaseOrderData.deleted ? 1 : 0,  // Convert boolean to 0 or 1 for MySQL
+                    purchaseOrderData.deleted ? 1 : 0, // Convert boolean to 0 or 1 for MySQL
                     purchaseOrder_id
-                ].map(value => (value === undefined ? null : value)),  // Map undefined to null
+                ].map(value => (value === undefined ? null : value)), // Map undefined to null
                 (error, result) => {
                     if (error) {
                         reject(error);

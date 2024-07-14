@@ -1,76 +1,79 @@
-import { Request, Response } from 'express';
-import { PurchaseOrderService } from '../services/purchaseOrderServices';
+import { Request, Response } from "express";
+import { PurchaseOrderService } from "../services/purchaseOrderServices";
+import { PurchaseOrder } from "../models/PurchaseOrder";
 
-export const getAllPurchaseOrder = async (_req: Request, res: Response) => {
+export const getAllPurchaseOrder = async (_req: Request, res: Response): Promise<Response> => {
     try {
         const purchaseOrders = await PurchaseOrderService.getAllPurchaseOrder();
-        res.status(200).json(purchaseOrders);
+        return res.status(200).json(purchaseOrders);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al obtener las órdenes de compra: ${error.message}` });
     }
 };
 
-export const getPurchaseOrderById = async (req: Request, res: Response) => {
+export const getPurchaseOrderById = async (req: Request, res: Response): Promise<Response> => {
+    const { purchaseOrder_id } = req.params;
     try {
-        const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const purchaseOrder = await PurchaseOrderService.getPurchaseOrderById(purchaseOrderId);
+        const purchaseOrder = await PurchaseOrderService.getPurchaseOrderById(Number(purchaseOrder_id));
         if (purchaseOrder) {
-            res.status(200).json(purchaseOrder);
+            return res.status(200).json(purchaseOrder);
         } else {
-            res.status(404).json({ message: 'Orden no encontrada.' });
+            return res.status(404).json({ message: `Orden de compra no encontrada` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al obtener la orden de compra: ${error.message}` });
     }
 };
 
-export const createPurchaseOrder = async (req: Request, res: Response) => {
+export const createPurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
+    const purchaseOrderData: PurchaseOrder = req.body;
     try {
-        const newPurchaseOrder = await PurchaseOrderService.addPurchaseOrder(req.body);
-        res.status(201).json(newPurchaseOrder);
+        const purchaseOrder = await PurchaseOrderService.addPurchaseOrder(purchaseOrderData);
+        return res.status(201).json(purchaseOrder);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al crear la orden de compra: ${error.message}` });
     }
 };
 
-export const updatePurchaseOrder = async (req: Request, res: Response) => {
+export const updatePurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
+    const { purchaseOrder_id } = req.params;
+    const purchaseOrderData: PurchaseOrder = req.body;
     try {
-        const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const updatedPurchaseOrder = await PurchaseOrderService.modifyPurchaseOrder(purchaseOrderId, req.body);
+        const updatedPurchaseOrder = await PurchaseOrderService.modifyPurchaseOrder(Number(purchaseOrder_id), purchaseOrderData);
         if (updatedPurchaseOrder) {
-            res.status(200).json(updatedPurchaseOrder);
+            return res.status(200).json(updatedPurchaseOrder);
         } else {
-            res.status(404).json({ message: 'Orden no encontrada o no se pudo actualizar.' });
+            return res.status(404).json({ message: `Orden de compra no encontrada` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al actualizar la orden de compra: ${error.message}` });
     }
 };
 
-export const deletePurchaseOrder = async (req: Request, res: Response) => {
+export const deletePurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
+    const { purchaseOrder_id } = req.params;
     try {
-        const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const deleted = await PurchaseOrderService.deletedPurchaseOrder(purchaseOrderId);
+        const deleted = await PurchaseOrderService.deletedPurchaseOrder(Number(purchaseOrder_id));
         if (deleted) {
-            res.status(200).json({ message: 'Orden eliminada correctamente.' });
+            return res.status(200).json({ message: `Orden de compra eliminada` });
         } else {
-            res.status(404).json({ message: 'Orden no encontrada o no se pudo eliminar.' });
+            return res.status(404).json({ message: `Orden de compra no encontrada` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al eliminar la orden de compra: ${error.message}` });
     }
 };
 
-export const deleteLogicalPurchaseOrder = async (req: Request, res: Response) => {
+export const deleteLogicalPurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
+    const { purchaseOrder_id } = req.params;
     try {
-        const purchaseOrderId = parseInt(req.params.purchaseOrder_id, 10);
-        const success = await PurchaseOrderService.deletePurchaseOrderLogic(purchaseOrderId);
-        if (success) {
-            res.status(200).json({ message: 'Orden eliminada lógicamente correctamente.' });
+        const deleted = await PurchaseOrderService.deletedLogicalPurchaseOrder(Number(purchaseOrder_id));
+        if (deleted) {
+            return res.status(200).json({ message: `Orden de compra eliminada lógicamente` });
         } else {
-            res.status(404).json({ message: 'Orden no encontrada o ya eliminada lógicamente.' });
+            return res.status(404).json({ message: `Orden de compra no encontrada` });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error al eliminar la orden de compra lógicamente: ${error.message}` });
     }
 };

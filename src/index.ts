@@ -14,7 +14,6 @@ import https from 'https';
 import fs from 'fs';
 */
 import cors from 'cors';
-import addressRoutes from './Address/routes/addressRoutes';
 import statusRoutes from './status/routes/statusRoutes';
 
 dotenv.config();
@@ -44,7 +43,6 @@ app.use('/api/products', productRoutes);
 app.use("/categories", categoryRouters);
 app.use('/api/purchaseOrders', purchaseOrderRoutes);
 app.use('/api/deliverys', deliveryRoutes);
-app.use('/api/addresses', addressRoutes);
 app.use('/api/status', statusRoutes);
 
 app.use(notFoundHandler);

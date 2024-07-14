@@ -47,8 +47,11 @@ export class PurchaseOrderService {
                 if (purchaseOrderData.client_id_fk) {
                     purchaseOrderFound.client_id_fk = purchaseOrderData.client_id_fk;
                 }
-                if (purchaseOrderData.address_id_fk) {
-                    purchaseOrderFound.address_id_fk = purchaseOrderData.address_id_fk;
+                if (purchaseOrderData.street) {
+                    purchaseOrderFound.street = purchaseOrderData.street;
+                }
+                if (purchaseOrderData.city) {
+                    purchaseOrderFound.city = purchaseOrderData.city;
                 }
                 if (purchaseOrderData.status_id_fk) {
                     purchaseOrderFound.status_id_fk = purchaseOrderData.status_id_fk;
@@ -79,11 +82,11 @@ export class PurchaseOrderService {
         }
     }
 
-    public static async deletePurchaseOrderLogic(purchaseOrderId: number): Promise<boolean> {
+    public static async deletedLogicalPurchaseOrder(purchaseOrderId: number): Promise<boolean> {
         try {
             return await PurchaseOrderRepository.deletePurchaseLogic(purchaseOrderId);
         } catch (error: any) {
-            throw new Error(`Error al eliminar lógicamente la orden de compra: ${error.message}`);
+            throw new Error(`Error al eliminar la orden de compra lógicamente: ${error.message}`);
         }
     }
 }
