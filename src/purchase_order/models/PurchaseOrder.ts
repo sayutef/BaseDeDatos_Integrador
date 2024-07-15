@@ -2,6 +2,7 @@ export interface PurchaseOrder {
     purchaseOrder_id: number | null;
     date: string;
     total: number;
+    product_id_fk:number;
     user_id_fk: number;
     street: string;
     city: string;

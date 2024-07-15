@@ -31,17 +31,14 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
     try {
         const { products, user_id_fk, street, city } = req.body;
 
-        // Validar que products sea un arreglo no vacío
         if (!Array.isArray(products) || products.length === 0) {
-            return res.status(400).json({ message: 'Invalid products array' });
+            return res.status(400).json({ message: 'Invalid or empty products array' });
         }
 
-        // Validar user_id_fk sea un número positivo
         if (typeof user_id_fk !== 'number' || user_id_fk <= 0) {
             return res.status(400).json({ message: 'Invalid user_id_fk' });
         }
 
-        // Validar street y city sean cadenas no vacías
         if (typeof street !== 'string' || street.trim() === '') {
             return res.status(400).json({ message: 'Invalid street' });
         }
@@ -49,8 +46,8 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
             return res.status(400).json({ message: 'Invalid city' });
         }
 
-        // Verificar que todos los productos existan y calcular el total
         let total = 0;
+        let product_id_fk = 0;
         const productPromises = products.map(async (productId: number) => {
             const product = await ProductService.getProductById(productId);
             if (!product) {
@@ -60,69 +57,120 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
                 throw new Error(`Invalid price (${product.price}) for product ID ${productId}`);
             }
             total += product.price;
+            product_id_fk = productId; // Assuming you want to use the last product's ID
         });
 
         try {
             await Promise.all(productPromises);
-        } catch (error:any) {
+        } catch (error: any) {
             return res.status(404).json({ message: error.message });
         }
 
-        // Validar que total sea un número válido
         if (typeof total !== 'number' || isNaN(total) || !isFinite(total)) {
             return res.status(400).json({ message: 'Invalid total amount' });
         }
 
-        // Crear el objeto de la orden de compra
         const newPurchaseOrder: PurchaseOrder = {
             purchaseOrder_id: null,
-            date: DateUtils.formatDate(new Date()), // Ejemplo de formato de fecha ISO
+            date: DateUtils.formatDate(new Date()), 
             total: total,
+            product_id_fk: product_id_fk,
             user_id_fk: user_id_fk,
             street: street,
             city: city,
-            status_id_fk: 1, // Estado inicial de la orden (pendiente)
+            status_id_fk: 1, 
             created_by: 'API',
             updated_by: 'API',
             created_at: DateUtils.formatDate(new Date()),
             updated_at: DateUtils.formatDate(new Date()),
             deleted: false,
         };
-
-        // Guardar la orden de compra en la base de datos usando el servicio
+      
         const createdPurchaseOrder = await PurchaseOrderService.addPurchaseOrder(newPurchaseOrder);
 
-        // Si se crea correctamente, responder con la orden creada
         return res.status(201).json(createdPurchaseOrder);
     } catch (error: any) {
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ message: `Error creating purchase order: ${error.message}` });
     }
 };
 
+
 export const updatePurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
     const { purchaseOrder_id } = req.params;
-    const purchaseOrderData: Partial<PurchaseOrder> = req.body;
+    const { products, date, user_id_fk, street, city, status_id_fk, updated_by, deleted } = req.body;
     try {
-        const updatedPurchaseOrder = await PurchaseOrderService.updatePurchaseOrder(
-            Number(purchaseOrder_id),
-            purchaseOrderData
-        );
-        if (updatedPurchaseOrder) {
-            return res.status(200).json(updatedPurchaseOrder);
-        } else {
+        const existingPurchaseOrder = await PurchaseOrderService.getPurchaseOrderById(Number(purchaseOrder_id));
+        if (!existingPurchaseOrder) {
             return res.status(404).json({ message: `Purchase order not found` });
         }
+
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ message: 'Invalid products array' });
+        }
+
+        if (typeof user_id_fk !== 'number' || user_id_fk <= 0) {
+            return res.status(400).json({ message: 'Invalid user_id_fk' });
+        }
+
+        if (typeof street !== 'string' || street.trim() === '') {
+            return res.status(400).json({ message: 'Invalid street' });
+        }
+
+        if (typeof city !== 'string' || city.trim() === '') {
+            return res.status(400).json({ message: 'Invalid city' });
+        }
+
+        let newTotal = 0;
+        let newProduct_id_fk = 0;
+        const productPromises = products.map(async (productId: number) => {
+            const product = await ProductService.getProductById(productId);
+            if (!product) {
+                throw new Error(`Product with ID ${productId} not found`);
+            }
+            if (typeof product.price !== 'number' || isNaN(product.price) || product.price <= 0) {
+                throw new Error(`Invalid price (${product.price}) for product ID ${productId}`);
+            }
+            newTotal += product.price;
+            newProduct_id_fk = productId;
+        });
+
+        try {
+            await Promise.all(productPromises);
+        } catch (error: any) {
+            return res.status(404).json({ message: error.message });
+        }
+
+        if (typeof newTotal !== 'number' || isNaN(newTotal) || !isFinite(newTotal)) {
+            return res.status(400).json({ message: 'Invalid total amount' });
+        }
+
+        const updatedPurchaseOrderData: PurchaseOrder = {
+            ...existingPurchaseOrder,
+            date: date || existingPurchaseOrder.date,
+            total: newTotal,
+            product_id_fk: newProduct_id_fk,
+            user_id_fk: user_id_fk || existingPurchaseOrder.user_id_fk,
+            street: street || existingPurchaseOrder.street,
+            city: city || existingPurchaseOrder.city,
+            status_id_fk: status_id_fk || existingPurchaseOrder.status_id_fk,
+            updated_at: DateUtils.formatDate(new Date()),
+            updated_by: updated_by || 'API',
+            deleted: deleted !== undefined ? deleted : existingPurchaseOrder.deleted
+        };
+
+        const updatedPurchaseOrder = await PurchaseOrderService.updatePurchaseOrder(Number(purchaseOrder_id), updatedPurchaseOrderData);
+        return res.status(200).json(updatedPurchaseOrder);
     } catch (error: any) {
-        return res.status(500).json({ message: `Error modifying purchase order: ${error.message}` });
+        return res.status(500).json({ message: `Error updating purchase order: ${error.message}` });
     }
 };
 
 export const deletePurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
     const { purchaseOrder_id } = req.params;
     try {
-        const result = await PurchaseOrderService.deletePurchaseOrder(Number(purchaseOrder_id));
-        if (result) {
-            return res.status(204).json({ message: `Purchase order deleted successfully` });
+        const success = await PurchaseOrderService.deletePurchaseOrder(Number(purchaseOrder_id));
+        if (success) {
+            return res.status(200).json({ message: `Purchase order deleted successfully` });
         } else {
             return res.status(404).json({ message: `Purchase order not found` });
         }
@@ -131,16 +179,16 @@ export const deletePurchaseOrder = async (req: Request, res: Response): Promise<
     }
 };
 
-export const deleteLogicalPurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
+export const deletePurchaseOrderLogic = async (req: Request, res: Response): Promise<Response> => {
     const { purchaseOrder_id } = req.params;
     try {
-        const result = await PurchaseOrderService.deleteLogicalPurchaseOrder(Number(purchaseOrder_id));
-        if (result) {
-            return res.status(204).json({ message: `Purchase order logically deleted successfully` });
+        const success = await PurchaseOrderService.deleteLogicalPurchaseOrder(Number(purchaseOrder_id));
+        if (success) {
+            return res.status(200).json({ message: `Purchase order deleted logically` });
         } else {
             return res.status(404).json({ message: `Purchase order not found` });
         }
     } catch (error: any) {
-        return res.status(500).json({ message: `Error logically deleting purchase order: ${error.message}` });
+        return res.status(500).json({ message: `Error deleting purchase order logically: ${error.message}` });
     }
 };

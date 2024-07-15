@@ -38,6 +38,7 @@ export class PurchaseOrderService {
                 throw new Error(`Purchase order with ID ${purchaseOrder_id} not found.`);
             }
 
+            // Actualización de campos
             if (purchaseOrderData.date !== undefined) {
                 purchaseOrderFound.date = purchaseOrderData.date;
             }
@@ -59,9 +60,7 @@ export class PurchaseOrderService {
             if (purchaseOrderData.updated_by !== undefined) {
                 purchaseOrderFound.updated_by = purchaseOrderData.updated_by;
             }
-            if (purchaseOrderData.updated_at !== undefined) {
-                purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
-            }
+      ¿       purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
             if (purchaseOrderData.deleted !== undefined) {
                 purchaseOrderFound.deleted = purchaseOrderData.deleted;
             }

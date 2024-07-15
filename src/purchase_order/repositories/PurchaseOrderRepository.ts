@@ -37,11 +37,12 @@ export class PurchaseOrderRepository {
     }
 
     public static async createPurchaseOrder(purchaseOrder: PurchaseOrder): Promise<PurchaseOrder> {
-        const query = 'INSERT INTO purchaseorder (date, total, user_id_fk, street, city, status_id_fk, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO purchaseorder (date, total, product_id_fk, user_id_fk, street, city, status_id_fk, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         return new Promise((resolve, reject) => {
             connection.query(query, [
                 purchaseOrder.date,
                 purchaseOrder.total,
+                purchaseOrder.product_id_fk,
                 purchaseOrder.user_id_fk,
                 purchaseOrder.street,
                 purchaseOrder.city,
@@ -55,8 +56,8 @@ export class PurchaseOrderRepository {
                 if (error) {
                     reject(error);
                 } else {
-                    const createPurchaseOrderId = (result as ResultSetHeader).insertId;
-                    const createdPurchaseOrder: PurchaseOrder = { ...purchaseOrder, purchaseOrder_id: createPurchaseOrderId };
+                    const createdPurchaseOrderId = (result as ResultSetHeader).insertId;
+                    const createdPurchaseOrder: PurchaseOrder = { ...purchaseOrder, purchaseOrder_id: createdPurchaseOrderId };
                     resolve(createdPurchaseOrder);
                 }
             });
@@ -64,10 +65,11 @@ export class PurchaseOrderRepository {
     }
 
     public static async updatePurchaseOrder(purchaseOrder_id: number, purchaseOrderData: PurchaseOrder): Promise<PurchaseOrder | null> {
-        const query = `UPDATE purchaseorder SET date = ?, total = ?, user_id_fk = ?, street = ?, city = ?, status_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE purchaseOrder_id = ?`;
+        const query = `UPDATE purchaseorder SET date = ?, total = ?, product_id_fk = ?, user_id_fk = ?, street = ?, city = ?, status_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE purchaseOrder_id = ?`;
         const values = [
             purchaseOrderData.date,
             purchaseOrderData.total,
+            purchaseOrderData.product_id_fk,
             purchaseOrderData.user_id_fk,
             purchaseOrderData.street,
             purchaseOrderData.city,
