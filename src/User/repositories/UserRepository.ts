@@ -17,6 +17,48 @@ export class UserRepository {
         });
     }
 
+    public static async findEmpleados(): Promise<User[]> {
+        const query = 'SELECT * FROM user WHERE deleted = 0 AND role_id_fk = 2';
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const users: User[] = results as User[];
+                    resolve(users);
+                }
+            });
+        });
+    }
+
+    public static async findAdministrador(): Promise<User[]> {
+        const query = 'SELECT * FROM user WHERE deleted = 0 AND role_id_fk = 1';
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const users: User[] = results as User[];
+                    resolve(users);
+                }
+            });
+        });
+    }
+
+    public static async findClientes(): Promise<User[]> {
+        const query = 'SELECT * FROM user WHERE deleted = 0 AND role_id_fk = 3';
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const users: User[] = results as User[];
+                    resolve(users);
+                }
+            });
+        });
+    }
+
     public static async findById(user_id: number): Promise<User | null> {
         const query = 'SELECT * FROM user WHERE user_id = ? AND deleted = 0';
         return new Promise((resolve, reject) => {
@@ -81,8 +123,8 @@ export class UserRepository {
                 if (error) {
                     reject(error);
                 } else {
-                    if ((result as any).affectedRows > 0) {
-                        resolve({ ...userData, user_id: userId });
+                    if ((result as ResultSetHeader).affectedRows > 0) {
+                        resolve(userData);
                     } else {
                         resolve(null);
                     }
@@ -91,10 +133,10 @@ export class UserRepository {
         });
     }
 
-    public static async deleteUser(user_id: number): Promise<boolean> {
-        const query = 'DELETE FROM user WHERE user_id = ?';
+    public static async deleteUser(userId: number): Promise<boolean> {
+        const query = `DELETE FROM user WHERE user_id = ?`;
         return new Promise((resolve, reject) => {
-            connection.query(query, [user_id], (error, result) => {
+            connection.query(query, [userId], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -108,10 +150,10 @@ export class UserRepository {
         });
     }
 
-    public static async deleteLogic(user_id: number): Promise<boolean> {
-        const query = 'UPDATE user SET deleted = 1 WHERE user_id = ?';
+    public static async deleteLogic(userId: number): Promise<boolean> {
+        const query = `UPDATE user SET deleted = 1 WHERE user_id = ?`;
         return new Promise((resolve, reject) => {
-            connection.query(query, [user_id], (error, result) => {
+            connection.query(query, [userId], (error, result) => {
                 if (error) {
                     reject(error);
                 } else {

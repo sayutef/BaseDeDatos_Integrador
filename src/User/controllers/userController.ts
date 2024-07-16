@@ -10,23 +10,23 @@ export const loginUser = async (req: Request, res: Response) => {
         const token = await UserService.login(email, password);
 
         if (!token) {
-            res.status(401).json({ message: 'Invalid email or password' });
-        } else {
-            const payload = jwt.verify(token, secretKey) as any;
-            res.status(200).json({ token, user_id: payload.user_id });
+            return res.status(401).json({ message: 'Invalid email or password' });
         }
-    } catch (error) {
+
+        const payload = jwt.verify(token, secretKey) as { user_id: number };
+        return res.status(200).json({ token, user_id: payload.user_id });
+    } catch (error: any) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
 
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
         const users = await UserService.getAllUsers();
-        res.status(200).json(users);
+        return res.status(200).json(users);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -35,12 +35,39 @@ export const getUserById = async (req: Request, res: Response) => {
     try {
         const user = await UserService.getUserById(userId);
         if (user) {
-            res.status(200).json(user);
+            return res.status(200).json(user);
         } else {
-            res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getEmpleados = async (_req: Request, res: Response) => {
+    try {
+        const empleados = await UserService.getEmpleados();
+        return res.status(200).json(empleados);
+    } catch (error: any) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getAdministradores = async (_req: Request, res: Response) => {
+    try {
+        const administradores = await UserService.getAdministradores();
+        return res.status(200).json(administradores);
+    } catch (error: any) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getClientes = async (_req: Request, res: Response) => {
+    try {
+        const clientes = await UserService.getClientes();
+        return res.status(200).json(clientes);
+    } catch (error: any) {
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -50,14 +77,13 @@ export const createUser = async (req: Request, res: Response) => {
         
         const exists = await UserService.userExists(email);
         if (exists) {
-            res.status(409).json({ message: 'User already exists' });
-            return;
+            return res.status(409).json({ message: 'User already exists' });
         }
 
         const newUser = await UserService.addUser(req.body);
-        res.status(201).json(newUser);
+        return res.status(201).json(newUser);
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -66,12 +92,12 @@ export const updateUser = async (req: Request, res: Response) => {
     try {
         const updatedUser = await UserService.modifyUser(userId, req.body);
         if (updatedUser) {
-            res.status(200).json(updatedUser);
+            return res.status(200).json(updatedUser);
         } else {
-            res.status(404).json({ message: 'User not found or could not be updated' });
+            return res.status(404).json({ message: 'User not found or could not be updated' });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -94,21 +120,11 @@ export const deleteLogicalUser = async (req: Request, res: Response) => {
     try {
         const success = await UserService.deleteUserLogic(userId);
         if (success) {
-            res.status(200).json({ message: 'User logically deleted successfully' });
+            return res.status(200).json({ message: 'User logically deleted successfully' });
         } else {
-            res.status(404).json({ message: 'User not found or already logically deleted' });
+            return res.status(404).json({ message: 'User not found or already logically deleted' });
         }
     } catch (error: any) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-export const userExists = async (req: Request, res: Response) => {
-    const { identifier } = req.params;
-    try {
-        const exists = await UserService.userExists(identifier);
-        res.json({ exists });
-    } catch (error : any) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };

@@ -13,7 +13,7 @@ const saltRounds = 10;
 export class UserService {
     public static async login(email: string, password: string) {
         try {
-            const user = await this.getUserByEmail(email);
+            const user = await UserRepository.findByEmail(email);
             if (!user) {
                 return null;
             }
@@ -51,11 +51,27 @@ export class UserService {
         }
     }
 
-    public static async getUserByEmail(email: string): Promise<User | null> {
+    public static async getEmpleados(): Promise<User[]> {
         try {
-            return await UserRepository.findByEmail(email);
+            return await UserRepository.findEmpleados();
         } catch (error: any) {
-            throw new Error(`Error al encontrar usuario: ${error.message}`);
+            throw new Error(`Error al obtener empleados: ${error.message}`);
+        }
+    }
+
+    public static async getAdministradores(): Promise<User[]> {
+        try {
+            return await UserRepository.findAdministrador();
+        } catch (error: any) {
+            throw new Error(`Error al obtener administradores: ${error.message}`);
+        }
+    }
+
+    public static async getClientes(): Promise<User[]> {
+        try {
+            return await UserRepository.findClientes();
+        } catch (error: any) {
+            throw new Error(`Error al obtener clientes: ${error.message}`);
         }
     }
 
@@ -125,14 +141,12 @@ export class UserService {
 
     public static async userExists(identifier: string): Promise<boolean> {
         if (!isNaN(parseInt(identifier))) {
-            // Verificar por ID
             const userId = parseInt(identifier, 10);
             const userById = await UserRepository.findById(userId);
-            return !!userById; // Devuelve true si se encontró un usuario con ese ID
+            return !!userById; 
         } else {
-            // Verificar por correo electrónico
             const userByEmail = await UserRepository.findByEmail(identifier);
-            return !!userByEmail; // Devuelve true si se encontró un usuario con ese correo electrónico
+            return !!userByEmail; 
         }
     }
 }
