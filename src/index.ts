@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
 import userRoutes from './User/routes/userRoutes';
@@ -9,29 +9,33 @@ import purchaseOrderRoutes from './purchase_order/routes/purchaseOrderRoutes';
 import deliveryRoutes from './delivery/routes/deliveryRoutes';
 import roleRoutes from './role/routes/roleRoutes';
 import categoryRouters from './category/routes/categoryRoutes';
+import morgan from 'morgan';
+
+import cors from 'cors';
+import statusRoutes from './status/routes/statusRoutes';
+import eventRoutes from './calendarEvent/routes/calendarEventRoutes';
 /*
 import https from 'https';
 import fs from 'fs';
 */
-import cors from 'cors';
-import statusRoutes from './status/routes/statusRoutes';
+
 
 dotenv.config();
 
-const app: Application = express();
-
+const app = express();
+app.use(morgan('dev'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// CORS configuration
+/* CORS configuration
 const corsOptions = {
   origin: ['https://ferreteriaapi.integrador.xyz', 'https://ferreteria.integrador.xyz'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
 };
-
-app.use(cors(corsOptions));
+*/
+app.use(cors());
 
 app.get('/', (_req, res) => {
   res.send('Hola, mundo!');
@@ -44,6 +48,7 @@ app.use("/categories", categoryRouters);
 app.use('/api/purchaseOrders', purchaseOrderRoutes);
 app.use('/api/deliverys', deliveryRoutes);
 app.use('/api/status', statusRoutes);
+app.use('/api/event', eventRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

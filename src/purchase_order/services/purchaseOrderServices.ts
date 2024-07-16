@@ -60,7 +60,7 @@ export class PurchaseOrderService {
             if (purchaseOrderData.updated_by !== undefined) {
                 purchaseOrderFound.updated_by = purchaseOrderData.updated_by;
             }
-      ¿       purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
+           purchaseOrderFound.updated_at = DateUtils.formatDate(new Date());
             if (purchaseOrderData.deleted !== undefined) {
                 purchaseOrderFound.deleted = purchaseOrderData.deleted;
             }
