@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import userRoutes from './User/routes/userRoutes';
 import { errorHandler } from './shared/middlewares/errorHandlers';
 import { notFoundHandler } from './shared/middlewares/notFoundHandlers';
-import productRoutes from './product/routes/productRoutes';
+import productsRoutes from './product/routes/productRoutes';
 import purchaseOrderRoutes from './purchase_order/routes/purchaseOrderRoutes';
 import deliveryRoutes from './delivery/routes/deliveryRoutes';
 import roleRoutes from './role/routes/roleRoutes';
@@ -43,8 +43,8 @@ app.get('/', (_req, res) => {
 
 app.use('/api/rol', roleRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use("/categories", categoryRouters);
+app.use('/api/products', productsRoutes);
+app.use("/api/categories", categoryRouters);
 app.use('/api/purchaseOrders', purchaseOrderRoutes);
 app.use('/api/deliverys', deliveryRoutes);
 app.use('/api/status', statusRoutes);
