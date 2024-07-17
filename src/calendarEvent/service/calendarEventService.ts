@@ -21,12 +21,16 @@ export class EventService {
 
     public static async addEvent(event: CalendarEvent): Promise<CalendarEvent> {
         try {
+            console.log('Añadiendo evento:', event); // Log inicial
             const currentDate = new Date();
             event.created_at = DateUtils.formatDate(currentDate);
             event.updated_at = DateUtils.formatDate(currentDate);
 
-            return await EventRepository.createEvent(event);
+            const createdEvent = await EventRepository.createEvent(event);
+            console.log('Evento creado:', createdEvent); // Log después de crear el evento
+            return createdEvent;
         } catch (error: any) {
+            console.error('Error al crear evento:', error); // Log de error
             throw new Error(`Error al crear evento: ${error.message}`);
         }
     }

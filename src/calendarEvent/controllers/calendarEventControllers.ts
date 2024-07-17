@@ -29,6 +29,7 @@ export const createEvent = async (req: Request, res: Response) => {
         const newEvent = await EventService.addEvent(req.body);
         res.status(201).json(newEvent);
     } catch (error: any) {
+        console.error('Error al crear evento:', error);  
         res.status(500).json({ error: error.message });
     }
 };

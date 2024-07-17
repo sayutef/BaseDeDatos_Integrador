@@ -75,6 +75,13 @@ export class UserService {
         }
     }
 
+    public static async getUserByEmail(email: string): Promise<User | null> {
+        try {
+            return await UserRepository.findByEmail(email);
+        } catch (error: any) {
+            throw new Error(`Error al obtener usuario por email: ${error.message}`);
+        }
+    }
     public static async addUser(user: User) {
         try {
             const salt = await bcrypt.genSalt(saltRounds);

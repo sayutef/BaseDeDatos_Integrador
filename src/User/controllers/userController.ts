@@ -13,14 +13,22 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
+    
+        const user = await UserService.getUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verificar y decodificar el token JWT para obtener datos adicionales
         const payload = jwt.verify(token, secretKey) as { user_id: number };
-        return res.status(200).json({ token, user_id: payload.user_id });
+
+        // Devolver el token JWT junto con el rol del usuario y el user_id del payload
+        return res.status(200).json({ token, role: user.role_id_fk, user_id: payload.user_id });
     } catch (error: any) {
         console.error('Login error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
-
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
         const users = await UserService.getAllUsers();
