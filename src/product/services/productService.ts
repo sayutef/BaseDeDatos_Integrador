@@ -12,6 +12,38 @@ export class ProductService {
         }
     }
 
+    public static async getProductManuales(): Promise<Product[]> {
+        try {
+            return await ProductRepository.findManuales();
+        } catch (error: any) {
+            throw new Error(`Error finding product: ${error.message}`);
+        }
+    }
+
+    public static async getProductElectricos(): Promise<Product[]> {
+        try {
+            return await ProductRepository.findElectricos();
+        } catch (error: any) {
+            throw new Error(`Error finding product: ${error.message}`);
+        }
+    }
+
+    public static async getProductConstruccion(): Promise<Product[]> {
+        try {
+            return await ProductRepository.findConstruccion();
+        } catch (error: any) {
+            throw new Error(`Error finding product: ${error.message}`);
+        }
+    }
+
+    public static async getProductOtherMore(): Promise<Product[]> {
+        try {
+            return await ProductRepository.findOtherMore();
+        } catch (error: any) {
+            throw new Error(`Error finding product: ${error.message}`);
+        }
+    }
+
     public static async getProductById(product_id: number): Promise<Product | null> {
         try {
             return await ProductRepository.findById(product_id);
@@ -22,50 +54,22 @@ export class ProductService {
 
     public static async addProduct(product: Product): Promise<Product> {
         try {
-            product.created_at = DateUtils.formatDate(new Date());
-            product.updated_at = DateUtils.formatDate(new Date());
-            return await ProductRepository.createUser(product);
+            const currentDate = DateUtils.formatDate(new Date());
+            product.created_at = currentDate;
+            product.updated_at = currentDate;
+            return await ProductRepository.createProduct(product);
         } catch (error: any) {
             throw new Error(`Error creating product: ${error.message}`);
         }
     }
 
-    public static async updateProduct(product_id: number, productData: Partial<Product>): Promise<Product | null> {
+    public static async updateProduct(product_id: number, productData: Product): Promise<Product | null> {
         try {
-            const productFound = await ProductRepository.findById(product_id);
-
-            if (!productFound) {
-                throw new Error(`Product with ID ${product_id} not found.`);
-            }
-
-            if (productData.name !== undefined) {
-                productFound.name = productData.name;
-            }
-            if (productData.description !== undefined) {
-                productFound.description = productData.description;
-            }
-            if (productData.price !== undefined) {
-                productFound.price = productData.price;
-            }
-            if (productData.stock !== undefined) {
-                productFound.stock = productData.stock;
-            }
-            if (productData.category_id_fk !== undefined) {
-                productFound.category_id_fk = productData.category_id_fk;
-            }
-            if (productData.updated_by !== undefined) {
-                productFound.updated_by = productData.updated_by;
-            }
-            if (productData.updated_at !== undefined) {
-                productFound.updated_at = DateUtils.formatDate(new Date());
-            }
-            if (productData.deleted !== undefined) {
-                productFound.deleted = productData.deleted;
-            }
-
-            return await ProductRepository.updateProduct(product_id, productFound);
+            const currentDate =DateUtils.formatDate(new Date());
+            productData.updated_at = currentDate;
+            return await ProductRepository.updateProduct(product_id, productData);
         } catch (error: any) {
-            throw new Error(`Error modifying product: ${error.message}`);
+            throw new Error(`Error updating product: ${error.message}`);
         }
     }
 
@@ -77,11 +81,11 @@ export class ProductService {
         }
     }
 
-    public static async deleteLogicalProduct(product_id: number): Promise<boolean> {
+    public static async deleteProductLogic(product_id: number): Promise<boolean> {
         try {
             return await ProductRepository.deleteProductLogic(product_id);
         } catch (error: any) {
-            throw new Error(`Error logically deleting product: ${error.message}`);
+            throw new Error(`Error deleting product: ${error.message}`);
         }
     }
 }

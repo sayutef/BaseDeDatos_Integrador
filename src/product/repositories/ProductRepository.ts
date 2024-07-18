@@ -3,10 +3,9 @@ import connection from "../../shared/config/database";
 import { Product } from "../models/Product";
 
 export class ProductRepository {
-
    
     public static async findAll(): Promise<Product[]> {
-        const query = "SELECT * FROM product";
+        const query = "SELECT * FROM product WHERE deleted = 0";
         return new Promise((resolve, reject) => {
             connection.query(query, (error, results) => {
                 if (error) {
@@ -14,7 +13,7 @@ export class ProductRepository {
                 } else {
                     const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
                         ...row,
-                        price: parseFloat(row.price as string) // Convertir el precio a número si es necesario
+                        price: parseFloat(row.price as string) 
                     })) as Product[];
                     resolve(products);
                 }
@@ -22,11 +21,76 @@ export class ProductRepository {
         });
     }
 
+    public static async findManuales(): Promise<Product[]> {
+        const query = "SELECT * FROM product WHERE deleted = 0 AND category_id_fk = 1";
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
+                        ...row,
+                        price: parseFloat(row.price as string) 
+                    })) as Product[];
+                    resolve(products);
+                }
+            });
+        });
+    }
 
+    public static async findElectricos(): Promise<Product[]> {
+        const query = "SELECT * FROM product WHERE deleted = 0 AND category_id_fk = 2";
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
+                        ...row,
+                        price: parseFloat(row.price as string) 
+                    })) as Product[];
+                    resolve(products);
+                }
+            });
+        });
+    }
 
+    public static async findConstruccion(): Promise<Product[]> {
+        const query = "SELECT * FROM product WHERE deleted = 0 AND category_id_fk = 3";
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
+                        ...row,
+                        price: parseFloat(row.price as string) 
+                    })) as Product[];
+                    resolve(products);
+                }
+            });
+        });
+    }
+
+    public static async findOtherMore(): Promise<Product[]> {
+        const query = "SELECT * FROM product WHERE deleted = 0 AND category_id_fk = 4";
+        return new Promise((resolve, reject) => {
+            connection.query(query, (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const products: Product[] = (results as RowDataPacket[]).map((row: RowDataPacket) => ({
+                        ...row,
+                        price: parseFloat(row.price as string) 
+                    })) as Product[];
+                    resolve(products);
+                }
+            });
+        });
+    }
 
     public static async findById(product_id: number): Promise<Product | null> {
-        const query = "SELECT * FROM product WHERE product_id = ?";
+        const query = "SELECT * FROM product WHERE deleted = 0 AND product_id = ?";
         return new Promise((resolve, reject) => {
             connection.query(query, [product_id], (error, results) => {
                 if (error) {
@@ -61,7 +125,7 @@ export class ProductRepository {
         });
     }
 
-    public static async createUser(product: Product): Promise<Product> {
+    public static async createProduct(product: Product): Promise<Product> {
         const query = 'INSERT INTO product (name, description, price, stock, category_id_fk, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         return new Promise((resolve, reject) => {
             connection.query(query, [
