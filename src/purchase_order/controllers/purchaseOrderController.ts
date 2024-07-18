@@ -47,17 +47,15 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
         }
 
         let total = 0;
-        let product_id_fk = 0;
-        const productPromises = products.map(async (productId: number) => {
-            const product = await ProductService.getProductById(productId);
-            if (!product) {
-                throw new Error(`Product with ID ${productId} not found`);
+        const productPromises = products.map(async (product: { id: number; cantidad: number }) => {
+            const productData = await ProductService.getProductById(product.id);
+            if (!productData) {
+                throw new Error(`Product with ID ${product.id} not found`);
             }
-            if (typeof product.price !== 'number' || isNaN(product.price) || product.price <= 0) {
-                throw new Error(`Invalid price (${product.price}) for product ID ${productId}`);
+            if (typeof productData.price !== 'number' || isNaN(productData.price) || productData.price <= 0) {
+                throw new Error(`Invalid price (${productData.price}) for product ID ${product.id}`);
             }
-            total += product.price;
-            product_id_fk = productId; // Assuming you want to use the last product's ID
+            total += productData.price * product.cantidad;
         });
 
         try {
@@ -72,20 +70,21 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
 
         const newPurchaseOrder: PurchaseOrder = {
             purchaseOrder_id: null,
-            date: DateUtils.formatDate(new Date()), 
+            date: DateUtils.formatDate(new Date()),
             total: total,
-            product_id_fk: product_id_fk,
+            product_id_fk: products[0].id, // Assuming you want to use the first product's ID
             user_id_fk: user_id_fk,
             street: street,
             city: city,
-            status_id_fk: 1, 
+            cantidad: products[0].cantidad,
+            status_id_fk: 1,
             created_by: 'API',
             updated_by: 'API',
             created_at: DateUtils.formatDate(new Date()),
             updated_at: DateUtils.formatDate(new Date()),
             deleted: false,
         };
-      
+
         const createdPurchaseOrder = await PurchaseOrderService.addPurchaseOrder(newPurchaseOrder);
 
         return res.status(201).json(createdPurchaseOrder);
@@ -93,7 +92,6 @@ export const createPurchaseOrder = async (req: Request, res: Response): Promise<
         return res.status(500).json({ message: `Error creating purchase order: ${error.message}` });
     }
 };
-
 
 export const updatePurchaseOrder = async (req: Request, res: Response): Promise<Response> => {
     const { purchaseOrder_id } = req.params;
@@ -121,17 +119,15 @@ export const updatePurchaseOrder = async (req: Request, res: Response): Promise<
         }
 
         let newTotal = 0;
-        let newProduct_id_fk = 0;
-        const productPromises = products.map(async (productId: number) => {
-            const product = await ProductService.getProductById(productId);
-            if (!product) {
-                throw new Error(`Product with ID ${productId} not found`);
+        const productPromises = products.map(async (product: { id: number; cantidad: number }) => {
+            const productData = await ProductService.getProductById(product.id);
+            if (!productData) {
+                throw new Error(`Product with ID ${product.id} not found`);
             }
-            if (typeof product.price !== 'number' || isNaN(product.price) || product.price <= 0) {
-                throw new Error(`Invalid price (${product.price}) for product ID ${productId}`);
+            if (typeof productData.price !== 'number' || isNaN(productData.price) || productData.price <= 0) {
+                throw new Error(`Invalid price (${productData.price}) for product ID ${product.id}`);
             }
-            newTotal += product.price;
-            newProduct_id_fk = productId;
+            newTotal += productData.price * product.cantidad;
         });
 
         try {
@@ -148,7 +144,7 @@ export const updatePurchaseOrder = async (req: Request, res: Response): Promise<
             ...existingPurchaseOrder,
             date: date || existingPurchaseOrder.date,
             total: newTotal,
-            product_id_fk: newProduct_id_fk,
+            product_id_fk: products[0].id, // Assuming you want to use the first product's ID
             user_id_fk: user_id_fk || existingPurchaseOrder.user_id_fk,
             street: street || existingPurchaseOrder.street,
             city: city || existingPurchaseOrder.city,
@@ -189,6 +185,6 @@ export const deletePurchaseOrderLogic = async (req: Request, res: Response): Pro
             return res.status(404).json({ message: `Purchase order not found` });
         }
     } catch (error: any) {
-        return res.status(500).json({ message: `Error deleting purchase order logically: ${error.message}` });
+        return res.status(500).json({ message: `Error logically deleting purchase order: ${error.message}` });
     }
 };

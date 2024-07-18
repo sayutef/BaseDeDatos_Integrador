@@ -10,7 +10,7 @@ import deliveryRoutes from './delivery/routes/deliveryRoutes';
 import roleRoutes from './role/routes/roleRoutes';
 import categoryRouters from './category/routes/categoryRoutes';
 import morgan from 'morgan';
-
+import imageRoutes from './Images/routes/imageRoutes';
 import cors from 'cors';
 import statusRoutes from './status/routes/statusRoutes';
 import eventRoutes from './calendarEvent/routes/calendarEventRoutes';
@@ -24,6 +24,7 @@ dotenv.config();
 
 const app = express();
 app.use(morgan('dev'))
+app.use('/images', imageRoutes);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
